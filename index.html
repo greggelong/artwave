@@ -28,15 +28,19 @@
             border-radius: 2.5rem;
             padding: 1rem;
             box-shadow: 0 0 0 1px #2a4a2a, 0 20px 35px -10px rgba(0, 255, 0, 0.2);
+            max-width: 90vw;
+            text-align: center;
         }
 
         canvas {
             display: block;
+            margin: 0 auto;
+            width: 100%;
+            height: auto;
+            max-width: 900px;
             border-radius: 1.8rem;
             cursor: crosshair;
             box-shadow: 0 0 0 1px #1f3a1f;
-            width: 100%;
-            height: auto;
         }
 
         .title {
@@ -141,23 +145,6 @@
             input {
                 width: 160px;
             }
-        }
-
-        .art-container {
-            max-width: 90vw;
-            /* prevents container from being wider than the screen */
-            text-align: center;
-            /* centers inline/block children horizontally */
-        }
-
-        canvas {
-            display: inline-block;
-            /* allows text-align to work */
-            width: auto;
-            /* override width:100% */
-            max-width: 100%;
-            /* scale down if needed, without distortion */
-            height: auto;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>

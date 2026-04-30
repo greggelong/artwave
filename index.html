@@ -144,15 +144,19 @@
         }
 
         .art-container {
+            max-width: 90vw;
+            /* prevents container from being wider than the screen */
             text-align: center;
+            /* centers inline/block children horizontally */
         }
 
         canvas {
             display: inline-block;
-            width: 900px;
-            /* keeps exact size */
+            /* allows text-align to work */
+            width: auto;
+            /* override width:100% */
             max-width: 100%;
-            /* shrinks only when screen is too small */
+            /* scale down if needed, without distortion */
             height: auto;
         }
     </style>

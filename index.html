@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ART WAVE 白浪潮 · fast wave + clean arrow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: #000000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            padding: 1rem;
+        }
+
+        .art-container {
+            background: #030303;
+            border-radius: 2.5rem;
+            padding: 1rem;
+            box-shadow: 0 0 0 1px #2a4a2a, 0 20px 35px -10px rgba(0, 255, 0, 0.2);
+        }
+
+        canvas {
+            display: block;
+            border-radius: 1.8rem;
+            cursor: crosshair;
+            box-shadow: 0 0 0 1px #1f3a1f;
+            width: 100%;
+            height: auto;
+        }
+
+        .title {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 1.7rem;
+            font-weight: 600;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #8aff80, #40c040);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px #0f0f00;
+            font-family: 'Courier New', monospace;
+        }
+
+        .title small {
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: #80ff80;
+            background: none;
+            -webkit-background-clip: unset;
+            background-clip: unset;
+            text-shadow: none;
+        }
+
+        .control-panel {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            background: #0f1a0faa;
+            backdrop-filter: blur(8px);
+            padding: 0.6rem 1.2rem;
+            border-radius: 60px;
+            border: 1px solid #2e6b2e;
+        }
+
+        .control-panel label {
+            font-family: monospace;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #b4ffb0;
+            letter-spacing: 1px;
+        }
+
+        input {
+            background: #1e2a1e;
+            border: 1px solid #6aff6a;
+            border-radius: 40px;
+            height: 6px;
+            width: 220px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input:focus {
+            outline: none;
+        }
+
+        input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #a0ffa0;
+            cursor: pointer;
+            box-shadow: 0 0 6px #0f0;
+            border: none;
+        }
+
+        .speed-value {
+            background: #000000aa;
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #d0ffd0;
+            border-left: 2px solid #6aff6a;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 0.8rem;
+            font-size: 0.7rem;
+            color: #4a7a4a;
+            font-family: monospace;
+        }
+
+        @media (max-width: 700px) {
+            .title {
+                font-size: 1.2rem;
+            }
+
+            .control-panel {
+                gap: 0.5rem;
+                padding: 0.4rem 1rem;
+            }
+
+            input {
+                width: 160px;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+
+<body>
+    <div>
+        <div class="art-container">
+            <div id="p5canvas"></div>
+            <div class="title">ART WAVE <small>白 浪 潮</small></div>
+            <div class="control-panel">
+                <label>🌊 WAVE DRIFT SPEED</label>
+                <input type="range" id="speedSlider" min="0" max="0.78" step="0.002" value="0.322">
+                <span id="speedDisplay" class="speed-value">0.322</span>
+            </div>
+            <footer>✦ one‑point tangency · no fill · clean arrow · faster wave max ✦</footer>
+        </div>
+    </div>
+
+    <script>
+        // --------------------------------------------------------------
+        // p5.js sketch – ABSOLUTELY NO FILL FOR SHAPES (stroke only)
+        // Sea‑like wave touches the lower‑right side of a large circle.
+        // Spinning arrow inside circle (like a clock hand, no shadow).
+        // Slider controls wave travel speed with extended range (up to 0.28 rad/frame)
+        // --------------------------------------------------------------
+
+        let circleX, circleY, R;
+        let contactX, contactY;       // wave touches circle at this point
+        let waveBaseY;
+        let amplitude = 68;
+        let t = 0;                    // global animation time
+
+        // wave parameters (living harmonics)
+        let k = 0.018;
+        let harmonicWeight = 0.65;
+        let thirdWeight = 0.45;
+        let travelSpeed = 0.322;      // will be updated by slider
+
+        let contactOffsetX = 36;       // pixels right of circle center
+
+        // arrow rotation (clock-like)
+        let arrowAngle = 0;
+        const arrowBaseSpeed = 0.052;  // constant angular speed (rad per frame)
+
+        // DOM elements
+        let speedSlider, speedDisplay;
+
+        function setup() {
+            let canvas = createCanvas(900, 600);
+            canvas.parent('p5canvas');
+            noFill();                    // NO FILL FOR SHAPES (circles, wave, arrows, markers)
+            strokeCap(ROUND);
+            strokeJoin(ROUND);
+
+            // initial geometry
+            circleX = width / 2;
+            circleY = height * 0.28;
+            R = 78;                      // large circle
+
+            updateContactPoint();
+
+            // get slider elements
+            speedSlider = select('#speedSlider');
+            speedDisplay = select('#speedDisplay');
+
+            // event listener for slider input
+            speedSlider.input(() => {
+                travelSpeed = float(speedSlider.value());
+                speedDisplay.html(travelSpeed.toFixed(3));
+            });
+        }
+
+        function updateContactPoint() {
+            let dx = constrain(contactOffsetX, 0, R - 5);
+            contactX = circleX + dx;
+            contactY = circleY + sqrt(R * R - dx * dx);
+            waveBaseY = contactY;
+        }
+
+        // additive wave function with guaranteed maximum (crest) at contactX
+        function waveY(x) {
+            let angle0 = k * (x - contactX) + HALF_PI;
+            let angle1 = 2 * k * (x - contactX) + HALF_PI;
+            let angle2 = 3 * k * (x - contactX) + HALF_PI;
+
+            let dx = x - contactX;
+            // travel effect – left‑to‑right drift, ZERO at contactX (so crest stays locked)
+            let travelPhase = 0.42 * sin(dx * 0.038 - t * travelSpeed) * (abs(dx) / 70);
+
+            let fund = sin(angle0 + travelPhase);
+            let harm = sin(angle1);
+            let third = sin(angle2);
+
+            let total = fund + harmonicWeight * harm + thirdWeight * third;
+            let maxPossible = 1 + harmonicWeight + thirdWeight;
+            let norm = total / maxPossible;
+
+            return waveBaseY + amplitude * (1 - norm);
+        }
+
+        function draw() {
+            background(0);
+
+            // Clear any possible shadow that might leak from anywhere (fix weird arrow shadow)
+            drawingContext.shadowBlur = 0;
+            drawingContext.shadowColor = "transparent";
+
+            // animate harmonic weights to mimic a living sea
+            harmonicWeight = 0.65 + 0.11 * sin(t * 0.43);
+            thirdWeight = 0.45 + 0.09 * cos(t * 0.39);
+
+            // ========== DRAW WAVE (no fill) ==========
+            stroke(70, 255, 100, 230);
+            strokeWeight(2.8);
+            beginShape();
+            for (let x = 0; x <= width; x += 3) {
+                let y = waveY(x);
+                vertex(x, y);
+            }
+            endShape();
+
+            // ========== DRAW LARGE CIRCLE (stroke only, no shadow) ==========
+            stroke(90, 230, 120);
+            strokeWeight(2.5);
+            circle(circleX, circleY, R * 2);
+
+            // inner accent ring (still no fill)
+            stroke(60, 180, 80, 100);
+            strokeWeight(1.2);
+            circle(circleX, circleY, R * 2 - 8);
+
+            // ========== SPINNING ARROW – clock style, NO SHADOW, NO FILL ==========
+            push();
+            translate(circleX, circleY);
+            rotate(arrowAngle);
+            // reset any shadow again locally
+            drawingContext.shadowBlur = 0;
+            stroke(150, 255, 150, 240);
+            strokeWeight(2.2);
+            line(0, 0, R - 10, 0);               // main shaft
+            strokeWeight(1.8);
+            line(R - 10, 0, R - 18, -6);          // arrowhead (upper)
+            line(R - 10, 0, R - 18, 6);           // arrowhead (lower)
+            stroke(100, 200, 100, 160);
+            //line(0, 0, -12, 0);                  // tiny counterweight
+            pop();
+
+            // ========== HIGHLIGHT CONTACT POINT (stroke only, ZERO fill) ==========
+            push();
+            stroke(140, 255, 120, 200);
+            strokeWeight(2);
+            noFill();                            // double‑safe
+            circle(contactX, contactY, 10);
+            stroke(220, 255, 160);
+            strokeWeight(1.5);
+            circle(contactX, contactY, 4);
+            pop();
+
+            // ========== MINIMAL TEXT INFO (fill allowed for readability, but we reset noFill after) ==========
+            fill(100, 210, 100);
+            noStroke();
+            textSize(11);
+            textFont("monospace");
+            text("~ ocean swell · wave touches lower‑right side of circle ~", 16, height - 18);
+            text("one‑point tangency    →    continuous left‑right motion", 16, height - 6);
+            text("↻ spinning arrow inside circle  |  speed slider ↑ faster waves", circleX - 95, circleY - R - 10);
+
+            // CRITICAL: reset noFill() to avoid any accidental fill leakage to next frame's shapes.
+            noFill();
+            // also ensure shadow is reset for next frame's shapes (though background clears each frame)
+
+            // update animations
+            arrowAngle += arrowBaseSpeed;
+            t += 0.028;                  // wave time evolution
+
+            // keep arrow angle within 2PI (avoid floating point creep)
+            if (arrowAngle > TWO_PI) arrowAngle -= TWO_PI;
+        }
+
+        // maintain contact point and geometry when window resizes
+        function windowResized() {
+            resizeCanvas(900, 600);
+            circleX = width / 2;
+            circleY = height * 0.28;
+            R = 78;
+            updateContactPoint();
+            redraw();
+        }
+    </script>
+</body>
+
+</html>

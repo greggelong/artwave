@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>ART WAVE 白浪潮 · fast wave + clean arrow</title>
+    <title>ART WAVE 白浪潮 · responsive circle & wave</title>
     <style>
         * {
             margin: 0;
@@ -25,65 +25,56 @@
 
         .art-container {
             background: #030303;
-            border-radius: 2.5rem;
+            border-radius: 2rem;
             padding: 1rem;
             box-shadow: 0 0 0 1px #2a4a2a, 0 20px 35px -10px rgba(0, 255, 0, 0.2);
-            max-width: 90vw;
-            text-align: center;
+            width: 100%;
+            max-width: 940px;
+            /* slightly more than canvas max width */
+            margin: 0 auto;
         }
 
         canvas {
             display: block;
             margin: 0 auto;
-            width: 100%;
-            height: auto;
-            max-width: 900px;
-            border-radius: 1.8rem;
+            border-radius: 1.5rem;
             cursor: crosshair;
             box-shadow: 0 0 0 1px #1f3a1f;
+            width: 100%;
+            height: auto;
         }
 
         .title {
             text-align: center;
             margin-top: 1rem;
-            font-size: 1.7rem;
+            font-size: clamp(1rem, 5vw, 1.7rem);
             font-weight: 600;
-            letter-spacing: 4px;
+            letter-spacing: 2px;
             background: linear-gradient(135deg, #8aff80, #40c040);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 0 10px #0f0f00;
+            text-shadow: 0 0 8px #0f0f00;
             font-family: 'Courier New', monospace;
-        }
-
-        .title small {
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            color: #80ff80;
-            background: none;
-            -webkit-background-clip: unset;
-            background-clip: unset;
-            text-shadow: none;
         }
 
         .control-panel {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 1rem;
+            gap: 0.8rem;
             margin-top: 1rem;
             flex-wrap: wrap;
             background: #0f1a0faa;
             backdrop-filter: blur(8px);
-            padding: 0.6rem 1.2rem;
+            padding: 0.5rem 1rem;
             border-radius: 60px;
             border: 1px solid #2e6b2e;
         }
 
         .control-panel label {
             font-family: monospace;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: bold;
             color: #b4ffb0;
             letter-spacing: 1px;
@@ -93,8 +84,8 @@
             background: #1e2a1e;
             border: 1px solid #6aff6a;
             border-radius: 40px;
-            height: 6px;
-            width: 220px;
+            height: 5px;
+            width: 180px;
             -webkit-appearance: none;
             appearance: none;
         }
@@ -105,8 +96,8 @@
 
         input::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             background: #a0ffa0;
             cursor: pointer;
@@ -116,10 +107,10 @@
 
         .speed-value {
             background: #000000aa;
-            padding: 0.2rem 0.7rem;
+            padding: 0.15rem 0.6rem;
             border-radius: 30px;
             font-family: monospace;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: #d0ffd0;
             border-left: 2px solid #6aff6a;
         }
@@ -127,23 +118,26 @@
         footer {
             text-align: center;
             margin-top: 0.8rem;
-            font-size: 0.9rem;
+            font-size: clamp(0.6rem, 3vw, 0.85rem);
             color: #4a7a4a;
             font-family: monospace;
+            line-height: 1.3;
+            white-space: normal;
+            word-break: break-word;
         }
 
         @media (max-width: 700px) {
-            .title {
-                font-size: 1.2rem;
-            }
-
             .control-panel {
-                gap: 0.5rem;
-                padding: 0.4rem 1rem;
+                gap: 0.4rem;
+                padding: 0.4rem 0.8rem;
             }
 
             input {
-                width: 160px;
+                width: 140px;
+            }
+
+            .art-container {
+                padding: 0.8rem;
             }
         }
     </style>
@@ -151,33 +145,29 @@
 </head>
 
 <body>
-
     <div class="art-container">
         <div id="p5canvas"></div>
-        <div class="title">ART WAVE 白 浪 潮 1st Wave第一浪
-            from
-            2026.5.2</div>
+        <div class="title">ART WAVE 白 浪 潮 1st Wave 第一浪<br><span style="font-size:0.6em;">from 2026.5.2</span></div>
         <div class="control-panel">
             <label>🌊 WAVE DRIFT SPEED</label>
             <input type="range" id="speedSlider" min="0" max="0.78" step="0.002" value="0.322">
             <span id="speedDisplay" class="speed-value">0.322</span>
         </div>
-        <footer>✦ 第一章：此刻或不再|Chapter1:Now or Never
-            央美小白楼3F
-            Venue by:
-            Co-Produced by:Apple Keng & ArtWorkers 艺术工人
-            Co-curation by:Xiaohai Wu,Yi Zhang,Zhiqiang Lv,Hanpu Zhang
-            Partners & Sponsors：振世远景展览服务公司|真力音响GENELEC
-            ✦</footer>
-
+        <footer>
+            ✦ 第一章：此刻或不再 | Chapter 1: Now or Never<br>
+            央美小白楼3F · Venue: CAFA Small White Building 3F<br>
+            Co-Produced by: Apple Keng & ArtWorkers 艺术工人<br>
+            Co-curation: Xiaohai Wu, Yi Zhang, Zhiqiang Lv, Hanpu Zhang<br>
+            Partners: 振世远景展览服务公司 | 真力音响 GENELEC ✦
+        </footer>
     </div>
 
     <script>
         // --------------------------------------------------------------
-        // p5.js sketch – ABSOLUTELY NO FILL FOR SHAPES (stroke only)
-        // Sea‑like wave touches the lower‑right side of a large circle.
-        // Spinning arrow inside circle (like a clock hand, no shadow).
-        // Slider controls wave travel speed with extended range (up to 0.28 rad/frame)
+        // RESPONSIVE p5 SKETCH – circle & wave keep aspect ratio
+        // No fill for any shape. Wave touches circle on lower‑right side.
+        // Arrow (clock hand) spins inside circle. Slider controls wave speed.
+        // Canvas resizes dynamically while maintaining 900/600 proportion.
         // --------------------------------------------------------------
 
         let circleX, circleY, R;
@@ -190,57 +180,65 @@
         let k = 0.018;
         let harmonicWeight = 0.65;
         let thirdWeight = 0.45;
-        let travelSpeed = 0.322;      // will be updated by slider
+        let travelSpeed = 0.322;      // updated by slider
 
-        let contactOffsetX = 36;       // pixels right of circle center
+        let contactOffsetX = 36;       // pixels right of circle center (relative to canvas width, but we'll keep absolute? better to keep as proportion of R? but for simplicity stays fixed as pixels, but when canvas resizes we may want to scale? We'll fix it relative to R.)
+        // Actually to keep contact point visually similar across sizes, make offset proportional to R.
+        let contactOffsetRatio = 0.46; // offset = R * 0.46 (approx 36px when R=78)
 
-        // arrow rotation (clock-like)
+        // arrow rotation
         let arrowAngle = 0;
-        const arrowBaseSpeed = 0.052;  // constant angular speed (rad per frame)
+        const arrowBaseSpeed = 0.052;  // rad per frame
 
         // DOM elements
         let speedSlider, speedDisplay;
+        let canvasWidth = 900, canvasHeight = 600; // target base dimensions
 
         function setup() {
-            let canvas = createCanvas(900, 600);
+            // Create canvas that fills container but maintains 900/600 ratio
+            let container = document.querySelector('.art-container');
+            let maxWidth = min(900, container.clientWidth - 32); // subtract padding
+            let w = maxWidth;
+            let h = w * (600 / 900);
+            let canvas = createCanvas(w, h);
             canvas.parent('p5canvas');
-            noFill();                    // NO FILL FOR SHAPES (circles, wave, arrows, markers)
+            noFill();                    // NO FILL FOR SHAPES
             strokeCap(ROUND);
             strokeJoin(ROUND);
 
-            // initial geometry
-            circleX = width / 2;
-            circleY = height * 0.28;
-            R = 78;                      // large circle
-
-            updateContactPoint();
+            // update geometry based on current canvas size
+            updateGeometry();
 
             // get slider elements
             speedSlider = select('#speedSlider');
             speedDisplay = select('#speedDisplay');
-
-            // event listener for slider input
             speedSlider.input(() => {
                 travelSpeed = float(speedSlider.value());
                 speedDisplay.html(travelSpeed.toFixed(3));
             });
         }
 
-        function updateContactPoint() {
-            let dx = constrain(contactOffsetX, 0, R - 5);
+        function updateGeometry() {
+            // circle centered horizontally, at 28% of height from top
+            circleX = width / 2;
+            circleY = height * 0.28;
+            R = min(78, width * 0.17, height * 0.26);  // responsive radius (max 78px, but scales down on small screens)
+            // adjust contact offset relative to R
+            let dx = constrain(R * contactOffsetRatio, 0, R - 5);
             contactX = circleX + dx;
             contactY = circleY + sqrt(R * R - dx * dx);
             waveBaseY = contactY;
+            // amplitude scales proportionally to keep wave visible
+            amplitude = min(68, height * 0.12);
         }
 
-        // additive wave function with guaranteed maximum (crest) at contactX
+        // wave function – ensures crest exactly at contactX
         function waveY(x) {
             let angle0 = k * (x - contactX) + HALF_PI;
             let angle1 = 2 * k * (x - contactX) + HALF_PI;
             let angle2 = 3 * k * (x - contactX) + HALF_PI;
 
             let dx = x - contactX;
-            // travel effect – left‑to‑right drift, ZERO at contactX (so crest stays locked)
             let travelPhase = 0.42 * sin(dx * 0.038 - t * travelSpeed) * (abs(dx) / 70);
 
             let fund = sin(angle0 + travelPhase);
@@ -256,90 +254,83 @@
 
         function draw() {
             background(0);
-
-            // Clear any possible shadow that might leak from anywhere (fix weird arrow shadow)
             drawingContext.shadowBlur = 0;
             drawingContext.shadowColor = "transparent";
 
-            // animate harmonic weights to mimic a living sea
+            // animate harmonic weights for fluid motion
             harmonicWeight = 0.65 + 0.11 * sin(t * 0.43);
             thirdWeight = 0.45 + 0.09 * cos(t * 0.39);
 
-            // ========== DRAW WAVE (no fill) ==========
+            // ---- draw wave (no fill) ----
             stroke(70, 255, 100, 230);
-            strokeWeight(2.8);
+            strokeWeight(max(1.2, width / 320));  // adaptive stroke weight
             beginShape();
-            for (let x = 0; x <= width; x += 3) {
+            for (let x = 0; x <= width; x += max(2, width / 300)) {
                 let y = waveY(x);
                 vertex(x, y);
             }
             endShape();
 
-            // ========== DRAW LARGE CIRCLE (stroke only, no shadow) ==========
+            // ---- draw large circle (stroke only) ----
             stroke(90, 230, 120);
-            strokeWeight(2.5);
+            strokeWeight(max(1.5, width / 360));
             circle(circleX, circleY, R * 2);
 
-            // inner accent ring (still no fill)
+            // inner accent ring
             stroke(60, 180, 80, 100);
-            strokeWeight(1.2);
+            strokeWeight(max(0.8, width / 750));
             circle(circleX, circleY, R * 2 - 8);
 
-            // ========== SPINNING ARROW – clock style, NO SHADOW, NO FILL ==========
+            // ---- spinning arrow (clock hand) ----
             push();
             translate(circleX, circleY);
             rotate(arrowAngle);
-            // reset any shadow again locally
-            drawingContext.shadowBlur = 0;
             stroke(150, 255, 150, 240);
-            strokeWeight(2.2);
-            line(0, 0, R - 10, 0);               // main shaft
-            strokeWeight(1.8);
-            line(R - 10, 0, R - 18, -6);          // arrowhead (upper)
-            line(R - 10, 0, R - 18, 6);           // arrowhead (lower)
-            stroke(100, 200, 100, 160);
-            //line(0, 0, -12, 0);                  // tiny counterweight
+            strokeWeight(max(1.5, width / 400));
+            line(0, 0, R - 8, 0);
+            strokeWeight(max(1.2, width / 500));
+            line(R - 8, 0, R - 14, -5);
+            line(R - 8, 0, R - 14, 5);
             pop();
 
-            // ========== HIGHLIGHT CONTACT POINT (stroke only, ZERO fill) ==========
+            // ---- highlight contact point (stroke only, no fill) ----
             push();
             stroke(140, 255, 120, 200);
-            strokeWeight(2);
-            noFill();                            // double‑safe
+            strokeWeight(max(1.5, width / 450));
+            noFill();
             circle(contactX, contactY, 10);
             stroke(220, 255, 160);
-            strokeWeight(1.5);
+            strokeWeight(max(1.2, width / 600));
             circle(contactX, contactY, 4);
             pop();
 
-            // ========== MINIMAL TEXT INFO (fill allowed for readability, but we reset noFill after) ==========
+            // ---- info text drawn on canvas (scales with canvas) ----
             fill(100, 210, 100);
             noStroke();
-            textSize(15);
+            let dynamicTextSize = max(9, width / 60);
+            textSize(dynamicTextSize);
             textFont("monospace");
-            text("央美小白楼3F White Building Across From CAFAM 3F", 16, height - 20);
-            text("one‑point tangency    →    continuous left‑right motion", 16, height - 6);
-            text(" 美院毕业季卫星艺术生态  Satellite Art Ecosystem of the Academy", circleX - 95, circleY - R - 10);
+            text("央美小白楼3F · White Building Across From CAFAM 3F", 12, height - 20);
+            text("one‑point tangency  →  continuous left‑right motion", 12, height - 8);
+            text("美院毕业季卫星艺术生态  |  Satellite Art Ecosystem", circleX - width * 0.28, circleY - R - 6);
 
-            // CRITICAL: reset noFill() to avoid any accidental fill leakage to next frame's shapes.
+            // reset noFill for shapes next frame
             noFill();
-            // also ensure shadow is reset for next frame's shapes (though background clears each frame)
 
             // update animations
             arrowAngle += arrowBaseSpeed;
-            t += 0.028;                  // wave time evolution
-
-            // keep arrow angle within 2PI (avoid floating point creep)
+            t += 0.028;
             if (arrowAngle > TWO_PI) arrowAngle -= TWO_PI;
         }
 
-        // maintain contact point and geometry when window resizes
+        // Responsive resize: recalculate canvas size and geometry
         function windowResized() {
-            resizeCanvas(900, 600);
-            circleX = width / 2;
-            circleY = height * 0.28;
-            R = 78;
-            updateContactPoint();
+            let container = document.querySelector('.art-container');
+            let maxWidth = min(900, container.clientWidth - 32);
+            let newW = max(maxWidth, 300);
+            let newH = newW * (600 / 900);
+            resizeCanvas(newW, newH);
+            updateGeometry();
             redraw();
         }
     </script>

@@ -19,9 +19,9 @@
             font-family: 'Segoe UI', 'Courier New', monospace;
             overflow-x: auto;
             /* allow horizontal scroll on narrow screens */
-            display: flex;
+            /*display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: center;*/
             padding: 1rem;
         }
 
@@ -131,6 +131,13 @@
             color: #4a7a4a;
             font-family: monospace;
             line-height: 1.4;
+        }
+
+        @media (max-width: 950px) {
+            .art-container {
+                margin: 0;
+                /* left align on narrow screens */
+            }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
